@@ -61,7 +61,7 @@
                 localStorage.removeItem('selectedTaal');
 
                 // Fetch and display the data for the selected Taal
-                fetch('Taals_New.csv')
+                fetch('https://raw.githubusercontent.com/RKotecha24/TablaPaltaGeneratorTrial/main/Taals_New.csv')
                 .then(response => response.text())
                 .then(data => {
                     const rows = data.split('\n').map(row => row.trim());
