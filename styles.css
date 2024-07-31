@@ -1,0 +1,186 @@
+/* styles.css */
+
+body {
+    font-family: 'Merriweather', serif;
+    margin: 0;
+    background-color: #f5f5f5;
+    color: #333;
+    text-align: center;
+}
+header, footer {
+    background-color: #8e44ad;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 5px solid #d2b4de;
+}
+.intro {
+    margin: 20px auto;
+    font-size: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    line-height: 1.8;
+}
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #8e44ad;
+}
+select, #structure-display, .box, .add-block-button, .clear-block-button, .generate-paltas-button {
+    font-size: 24px;
+    padding: 10px;
+    margin: 10px 5px;
+    border-radius: 5px;
+    border: 2px solid #8e44ad;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: center;
+}
+.add-block-button, .clear-block-button, .generate-paltas-button {
+    background-color: #8e44ad;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.add-block-button:hover, .clear-block-button:hover, .generate-paltas-button:hover {
+    background-color: #732d91;
+}
+.bol-buttons-container {
+    margin: 20px 0;
+}
+.bol-button {
+    font-size: 18px;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: #d2b4de;
+    color: #333;
+    cursor: pointer;
+}
+.bol-button:hover {
+    background-color: #b795c4;
+}
+.line-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+.box-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.box-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    width: fit-content;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.line-number {
+    font-size: 18px;
+    margin-right: 10px;
+    text-align: left;
+    color: #8e44ad;
+}
+.line-number-container {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+.box {
+    min-width: 50px;
+    height: 50px;
+    margin: 5px;
+    border: 2px solid #8e44ad;
+    text-align: center;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 0 5px;
+}
+.separator {
+    margin: 0 15px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #8e44ad;
+}
+.content {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.taal-info {
+    font-size: 20px;
+    margin-top: 20px;
+    color: #555;
+    white-space: pre-wrap;
+    max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+}
+.section-header {
+    font-size: 22px;
+    margin-top: 20px;
+    color: #8e44ad;
+    text-align: center;
+}
+.kayda {
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.line-content {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    align-items: center;
+    justify-content: center;
+}
+.box-content {
+    padding: 5px;
+    margin: 5px;
+    border-bottom: 2px solid #8e44ad; /* Underline only the content */
+    text-align: center; /* Center text horizontally */
+}
+.separator {
+    font-size: 24px;
+    font-weight: bold;
+    color: #8e44ad;
+}
+.palta {
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.palta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Palta Generator</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        Tabla Palta Generator
+    </header>
+    
+    <div class="intro">
+        <p>Welcome to the Tabla Palta Generator! This webpage is designed to help you practice and perfect your tabla skills by generating paltas from the kaydas you enter. You can select the difficulty level of the paltas, ranging from Beginner, Intermediate, to Advanced, to suit your current skill level.</p>
+        <p>You can also plan the duration of your practice session, which will determine how many paltas are provided. Whether you have a few minutes or a whole hour, we've got you covered. Let's get started on your rhythmic journey!</p>
+    </div>
+    
+    <div class="content">
+        <p id="structure-display"></p>
+        <p id="taal-info" class="taal-info">Select a Taal to see its information.</p>
+        
+        <div class="box-container-wrapper">
+            <div id="initial-line" class="line-container" style="display: none;">
+                <div class="line-number-container">
+                    <div class="line-number" id="line-number-1"></div>
+                </div>
+                <div id="box-container" class="box-container"></div>
+            </div>
+        </div>
+        
+        <h2>Select an Option</h2>
+        <select id="dropdown">
+            <option value="" disabled selected>Select Taal</option>
+        </select>
+        <button class="add-block-button" id="add-block-button">Add New Block</button>
+        <button class="clear-block-button" id="clear-block-button">Clear Last Block</button>
+        <button class="generate-paltas-button" id="generate-paltas-button">Generate Paltas</button>
+        
+        <div class="bol-buttons-container" id="bol-buttons-container">
+            <div class="section-header">Single Bols and Conjuncts</div>
+            <div id="bol-section"></div>
+            <div class="section-header">Phrases</div>
+            <div id="phrase-section"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Tabla Palta Generator. All Rights Reserved.
+    </footer>
+
+    <script>
+        let activeTextbox = null;
+        let isOddBeats = false; // Track if the selected Taal has odd number of beats
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedTaal = localStorage.getItem('selectedTaal');
+
+            if (selectedTaal) {
+                // Clear the local storage value
+                localStorage.removeItem('selectedTaal');
+
+                // Fetch and display the data for the selected Taal
+                fetch('Taals.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').map(row => row.trim());
+                    const dropdown = document.getElementById('dropdown');
+                    const structureDisplay = document.getElementById('structure-display');
+                    const taalInfoDisplay = document.getElementById('taal-info');
+                    const initialLine = document.getElementById('initial-line');
+                    const boxContainer = document.getElementById('box-container');
+                    const taalData = {};
+
+                    // Process the CSV data
+                    for (let i = 1; i < rows.length; i++) {
+                        const columns = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.trim());
+                        if (columns.length > 1) {
+                            const taal = columns[0].replace(/"/g, '').trim();
+                            const beats = parseInt(columns[1].replace(/"/g, '').trim());
+                            const structure = columns[2].replace(/"/g, '').trim();
+                            const info = columns[3] ? columns[3].replace(/"/g, '').trim() : 'No additional information available.';
+                            taalData[taal] = { structure, beats, info };
+
+                            const option = document.createElement('option');
+                            option.value = taal;
+                            option.text = `${taal} (${beats} beats)`;
+                            dropdown.add(option);
+                        }
+                    }
+
+                    // Set the dropdown value to the selected Taal
+                    dropdown.value = selectedTaal;
+
+                    // Display the selected Taal's data
+                    clearAllBlocks();
+                    initialLine.style.display = 'flex';
+                    isOddBeats = taalData[selectedTaal].beats % 2 !== 0;
+                    generateBoxStructure(selectedTaal, boxContainer, taalData, 1);
+                    structureDisplay.textContent = `${selectedTaal} (${taalData[selectedTaal].beats} beats) - Structure: ${taalData[selectedTaal].structure}`;
+                    taalInfoDisplay.textContent = taalData[selectedTaal].info;
+
+                    updateLineNumbersAndBeats();
+
+                    if (isOddBeats) {
+                        addNewBlock(); // Add an additional block for odd beats
+                    }
+                });
+            }
+
+            fetch('Taal_Breakdown.csv')
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split('\n').map(row => row.trim());
+                const dropdown = document.getElementById('dropdown');
+                const structureDisplay = document.getElementById('structure-display');
+                const taalInfoDisplay = document.getElementById('taal-info');
+                const initialLine = document.getElementById('initial-line');
+                const boxContainer = document.getElementById('box-container');
+                const taalData = {};
+
+                // Process the CSV data
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.trim());
+                    if (columns.length > 1) {
+                        const taal = columns[0].replace(/"/g, '').trim();
+                        const beats = parseInt(columns[1].replace(/"/g, '').trim());
+                        const structure = columns[2].replace(/"/g, '').trim();
+                        const info = columns[3] ? columns[3].replace(/"/g, '').trim() : 'No additional information available.';
+                        taalData[taal] = { structure, beats, info };
+
+                        const option = document.createElement('option');
+                        option.value = taal;
+                        option.text = `${taal} (${beats} beats)`;
+                        dropdown.add(option);
+                    }
+                }
+
+                // Event listener for dropdown change
+                dropdown.addEventListener('change', function() {
+                    const selectedTaal = dropdown.value;
+                    localStorage.setItem('selectedTaal', selectedTaal);
+                    location.reload();
+                });
+
+                // Event listener for "Add New Block" button
+                document.getElementById('add-block-button').addEventListener('click', function() {
+                    addNewBlock();
+                });
+
+                // Event listener for "Clear Last Block" button
+                document.getElementById('clear-block-button').addEventListener('click', function() {
+                    clearLastBlock();
+                });
+
+                // Event listener for "Generate Paltas" button
+                document.getElementById('generate-paltas-button').addEventListener('click', function() {
+                    generatePaltas();
+                });
+            });
+
+            // Load bols and phrases from CSV
+            fetch('Bols_Phrases.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').map(row => row.trim());
+                    const bolSection = document.getElementById('bol-section');
+                    const phraseSection = document.getElementById('phrase-section');
+                    
+                    rows.forEach((row, index) => {
+                        const columns = row.split(',');
+                        if (index === 0) return; // Skip header row
+
+                        // Create buttons for bols
+                        if (columns[0]) {
+                            const bolButton = document.createElement('button');
+                            bolButton.className = 'bol-button';
+                            bolButton.textContent = columns[0];
+                            bolButton.onclick = () => insertBol(columns[0].split('–')[0].trim() + ' ');
+                            bolSection.appendChild(bolButton);
+                        }
+
+                        // Create buttons for phrases
+                        if (columns[1]) {
+                            const phraseButton = document.createElement('button');
+                            phraseButton.className = 'bol-button';
+                            phraseButton.textContent = columns[1];
+                            phraseButton.onclick = () => insertBol(columns[1].split('–')[0].trim() + ' ');
+                            phraseSection.appendChild(phraseButton);
+                        }
+                    });
+                });
+        });
+
+        function addNewBlock() {
+            const boxContainerWrapper = document.querySelector('.box-container-wrapper');
+            const lastLine = document.querySelector('.line-container:last-child');
+            if (!lastLine) return;
+
+            const newLineContainer = lastLine.cloneNode(true);
+            const boxes = newLineContainer.querySelectorAll('.box');
+            boxes.forEach(box => {
+                box.value = ''; // Clear the contents of the new boxes
+                box.addEventListener('focus', () => {
+                    activeTextbox = box;
+                });
+                box.addEventListener('input', resizeInput);
+                resizeInput.call(box); // Initial resize
+            });
+
+            boxContainerWrapper.appendChild(newLineContainer);
+
+            updateLineNumbersAndBeats();
+        }
+
+        function clearLastBlock() {
+            const allContainers = document.querySelectorAll('.line-container');
+            const targetLength = isOddBeats ? 2 : 1;
+            const halfLength = Math.ceil(allContainers.length / 2);
+
+            if (allContainers.length > targetLength) {
+                for (let i = allContainers.length - 1; i >= halfLength; i--) {
+                    allContainers[i].remove();
+                }
+            }
+
+            updateLineNumbersAndBeats();
+        }
+
+        function updateLineNumbersAndBeats() {
+            const allContainers = document.querySelectorAll('.line-container');
+            let startBeat = 1;
+
+            allContainers.forEach((container, index) => {
+                const lineNumberElem = container.querySelector('.line-number');
+                const beats = container.querySelectorAll('.box').length; // Assuming each box represents a beat
+                const endBeat = startBeat + beats - 1;
+                lineNumberElem.textContent = `Line ${index + 1} (${startBeat} - ${endBeat} beats)`;
+                startBeat = endBeat + 1;
+            });
+        }
+
+        function generateBoxStructure(selectedTaal, container, data, lineNumber) {
+            const structure = data[selectedTaal].structure;
+            const beats = data[selectedTaal].beats;
+            const structureDisplay = document.getElementById('structure-display');
+            structureDisplay.textContent = `${selectedTaal} (${beats} beats) - Structure: ${structure}`;
+            
+            // Calculate beat ranges for each line
+            const lines = document.querySelectorAll('.line-container');
+            let startBeat = 1;
+
+            lines.forEach((line, index) => {
+                const lineNumberElem = line.querySelector('.line-number');
+                const endBeat = startBeat + beats - 1;
+                lineNumberElem.textContent = `Line ${index + 1} (${startBeat} - ${endBeat} beats)`;
+                startBeat = endBeat + 1;
+            });
+
+            // Generate new boxes based on structure
+            const groups = structure.split('|');
+            groups.forEach((group, index) => {
+                for (let i = 0; i < parseInt(group); i++) {
+                    const box = document.createElement('input');
+                    box.type = 'text';
+                    box.className = 'box';
+                    container.appendChild(box);
+                    box.addEventListener('focus', () => {
+                        activeTextbox = box;
+                    });
+                    box.addEventListener('input', resizeInput);
+                    resizeInput.call(box); // Initial resize
+                }
+                if (index < groups.length - 1) {
+                    const separator = document.createElement('span');
+                    separator.className = 'separator';
+                    separator.textContent = '|';
+                    container.appendChild(separator);
+                }
+            });
+        }
+
+        function clearAllBlocks() {
+            const content = document.querySelector('.box-container-wrapper');
+            const allContainers = content.querySelectorAll('.line-container');
+            allContainers.forEach(container => {
+                if (container.id !== 'initial-line') {
+                    container.remove();
+                } else {
+                    container.style.display = 'none';
+                    container.querySelector('.box-container').innerHTML = '';
+                    container.querySelector('.line-number').textContent = '';
+                }
+            });
+
+            updateLineNumbersAndBeats(); // Call this function to ensure the numbering is reset
+        }
+
+        function clearInitialBlockContents() {
+            const boxContainer = document.querySelector('#initial-line .box-container');
+            const boxes = boxContainer.querySelectorAll('.box');
+            boxes.forEach(box => {
+                box.value = '';
+                resizeInput.call(box);
+            });
+        }
+
+        // Function to insert bol into selected text box
+        window.insertBol = function(bol) {
+            if (activeTextbox && activeTextbox.classList.contains('box')) {
+                const bolText = bol.split('–')[0].trim();
+                activeTextbox.value += bolText + ' ';
+                resizeInput.call(activeTextbox);
+                activeTextbox.focus();
+            }
+        }
+
+        // Function to dynamically resize the text box based on its content
+        function resizeInput() {
+            const context = document.createElement('canvas').getContext('2d');
+            context.font = getComputedStyle(this).font;
+            const width = context.measureText(this.value).width;
+            this.style.width = (width + 20) + 'px'; // Add some padding to the width
+        }
+
+        function generatePaltas() {
+            const lines = document.querySelectorAll('.line-container');
+            const kaydas = [];
+            
+            lines.forEach(line => {
+                const lineNumberElem = line.querySelector('.line-number').textContent;
+                const boxesAndSeparators = line.querySelectorAll('.box, .separator');
+                const lineContent = [];
+                boxesAndSeparators.forEach((element, index) => {
+                    if (element.classList.contains('box')) {
+                        lineContent.push(element.value.trim());
+                    } else if (element.classList.contains('separator')) {
+                        lineContent.push('|');
+                    }
+                });
+                kaydas.push({
+                    lineNumber: lineNumberElem,
+                    content: lineContent.join(',')
+                });
+            });
+
+            const selectedTaal = document.getElementById('dropdown').value;
+            const structure = localStorage.getItem('selectedTaalStructure');
+
+            localStorage.setItem('generatedKaydas', JSON.stringify(kaydas));
+            localStorage.setItem('selectedTaalStructure', structure);
+            window.location.href = 'generate-paltas.html';
+        }
+
+    </script>
+</body>
+</html>

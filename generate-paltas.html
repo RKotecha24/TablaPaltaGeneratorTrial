@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Kayda and Palta</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        Generated Kayda and Palta
+    </header>
+    
+    <div class="content">
+        <h2>Kayda Entered</h2>
+        <div id="kayda-content" class="kayda">
+            <!-- Kayda will be displayed here -->
+        </div>
+
+        <h2>Generated Palta</h2>
+        <div id="palta-content" class="palta">
+            <!-- Palta will be displayed here -->
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Tabla Kayda Generator. All Rights Reserved.
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const kaydaContent = document.getElementById('kayda-content');
+            const kaydas = JSON.parse(localStorage.getItem('generatedKaydas'));
+
+            const kaydaWrapper = document.createElement('div');
+            kaydaWrapper.className = 'kayda-wrapper';
+
+            kaydas.forEach(kayda => {
+                const lineContainer = document.createElement('div');
+                lineContainer.className = 'line-container';
+
+                const lineNumberContainer = document.createElement('div');
+                lineNumberContainer.className = 'line-number-container';
+
+                const lineNumber = document.createElement('div');
+                lineNumber.className = 'line-number';
+                lineNumber.textContent = kayda.lineNumber;
+
+                const lineContent = document.createElement('div');
+                lineContent.className = 'line-content';
+
+                const parts = kayda.content.split(',');
+
+                parts.forEach(part => {
+                    if (part.trim() === '|') {
+                        const separator = document.createElement('span');
+                        separator.className = 'separator';
+                        separator.textContent = '|';
+                        lineContent.appendChild(separator);
+                    } else {
+                        const groupContent = document.createElement('span');
+                        groupContent.className = 'box-content';
+                        groupContent.textContent = part.trim();
+                        lineContent.appendChild(groupContent);
+                    }
+                });
+
+                lineNumberContainer.appendChild(lineNumber);
+                lineContainer.appendChild(lineNumberContainer);
+                lineContainer.appendChild(lineContent);
+                kaydaWrapper.appendChild(lineContainer);
+            });
+
+            kaydaContent.appendChild(kaydaWrapper);
+
+            // Generate the Palta content
+            const paltaContent = document.getElementById('palta-content');
+            const paltaWrapper = document.createElement('div');
+            paltaWrapper.className = 'palta-wrapper';
+
+            const paltaLines = kaydas.map(kayda => kayda.content);
+            const doubledPaltaLines = paltaLines.concat(paltaLines);
+
+            doubledPaltaLines.forEach(line => {
+                const lineContainer = document.createElement('div');
+                lineContainer.className = 'line-container';
+
+                const parts = line.split(',');
+
+                parts.forEach(part => {
+                    if (part.trim() === '|') {
+                        const separator = document.createElement('span');
+                        separator.className = 'separator';
+                        separator.textContent = '|';
+                        lineContainer.appendChild(separator);
+                    } else {
+                        const groupContent = document.createElement('span');
+                        groupContent.className = 'box-content';
+                        groupContent.textContent = part.trim();
+                        lineContainer.appendChild(groupContent);
+                    }
+                });
+
+                paltaWrapper.appendChild(lineContainer);
+            });
+
+            paltaContent.appendChild(paltaWrapper);
+        });
+    </script>
+</body>
+</html>
