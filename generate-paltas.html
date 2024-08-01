@@ -89,28 +89,27 @@
             const midIndexFirstHalf = Math.floor(firstHalf.length / 2);
             const midIndexSecondHalf = Math.floor(secondHalf.length / 2);
 
-            const firstHalfSecondPart = firstHalf.slice(midIndexFirstHalf);
-            const secondHalfSecondPart = secondHalf.slice(midIndexSecondHalf);
+            const firstHalfSecondPart = firstHalf.slice(midIndexFirstHalf).join(' ');
+            const secondHalfSecondPart = secondHalf.slice(midIndexSecondHalf).join(' ');
+
+            // Create an array with twice the number of lines as the original kayda
+            const totalLines = paltaLines.length * 2;
+            const paltaArray = new Array(totalLines).fill('empty');
+
+            // Insert the split content into the palta array
+            paltaArray[Math.floor(totalLines / 2) - 1] = firstHalfSecondPart;
+            paltaArray[totalLines - 1] = secondHalfSecondPart;
 
             // Create the palta output
-            const totalLines = paltaLines.length * 2; // Assuming we need to double the number of lines for palta
-            for (let i = 0; i < totalLines; i++) {
+            paltaArray.forEach(line => {
                 const lineContainer = document.createElement('div');
                 lineContainer.className = 'line-container';
                 const lineContent = document.createElement('div');
                 lineContent.className = 'line-content';
-
-                if (i === Math.floor(totalLines / 2) - 1) { // Middle line
-                    lineContent.textContent = firstHalfSecondPart.join(' ');
-                } else if (i === totalLines - 1) { // Last line
-                    lineContent.textContent = secondHalfSecondPart.join(' ');
-                } else {
-                    lineContent.textContent = 'empty';
-                }
-
+                lineContent.textContent = line;
                 lineContainer.appendChild(lineContent);
                 paltaWrapper.appendChild(lineContainer);
-            }
+            });
 
             paltaContent.appendChild(paltaWrapper);
         });
