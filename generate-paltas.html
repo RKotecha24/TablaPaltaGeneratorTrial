@@ -79,35 +79,28 @@
             paltaWrapper.className = 'palta-wrapper';
 
             const paltaLines = kaydas.map(kayda => kayda.content);
+            const doubledPaltaLines = paltaLines.concat(paltaLines);
 
-            // Split the content into 2 sections
-            const midIndex = Math.floor(paltaLines.length / 2);
-            const firstHalf = paltaLines.slice(0, midIndex);
-            const secondHalf = paltaLines.slice(midIndex);
-
-            // Split each section into 2 halves again
-            const midIndexFirstHalf = Math.floor(firstHalf.length / 2);
-            const midIndexSecondHalf = Math.floor(secondHalf.length / 2);
-
-            const firstHalfSecondPart = firstHalf.slice(midIndexFirstHalf).join(' ');
-            const secondHalfSecondPart = secondHalf.slice(midIndexSecondHalf).join(' ');
-
-            // Create an array with twice the number of lines as the original kayda
-            const totalLines = paltaLines.length * 2;
-            const paltaArray = new Array(totalLines).fill('empty');
-
-            // Insert the split content into the palta array
-            paltaArray[Math.floor(totalLines / 2) - 1] = firstHalfSecondPart;
-            paltaArray[totalLines - 1] = secondHalfSecondPart;
-
-            // Create the palta output
-            paltaArray.forEach(line => {
+            doubledPaltaLines.forEach(line => {
                 const lineContainer = document.createElement('div');
                 lineContainer.className = 'line-container';
-                const lineContent = document.createElement('div');
-                lineContent.className = 'line-content';
-                lineContent.textContent = line;
-                lineContainer.appendChild(lineContent);
+
+                const parts = line.split(',');
+
+                parts.forEach(part => {
+                    if (part.trim() === '|') {
+                        const separator = document.createElement('span');
+                        separator.className = 'separator';
+                        separator.textContent = '|';
+                        lineContainer.appendChild(separator);
+                    } else {
+                        const groupContent = document.createElement('span');
+                        groupContent.className = 'box-content';
+                        groupContent.textContent = part.trim();
+                        lineContainer.appendChild(groupContent);
+                    }
+                });
+
                 paltaWrapper.appendChild(lineContainer);
             });
 
